@@ -363,13 +363,14 @@ int main()
             auto end = high_resolution_clock::now();
 //            auto duration = duration_cast<milliseconds>(end - start);
             auto duration = duration_cast<milliseconds>(end - start);
-            cout << "Time taken for Dijkstra's Algorithm: " << duration.count() << endl;
+            cout << "Time taken for Dijkstra's Algorithm: " << duration.count() << " milliseconds" << endl;
+
             start = high_resolution_clock::now();
             vector<int> bellTime = Bellman_Ford(adj1, startIndex, data1.size()-1, data1.size());
             end = high_resolution_clock::now();
 //            duration = duration_cast<milliseconds>(end - start);
             duration = duration_cast<milliseconds>(end - start);
-            cout << "Time taken for Bellman Ford Algorithm: " << duration.count() << endl;
+            cout << "Time taken for Bellman Ford Algorithm: " << duration.count() << " milliseconds" << endl;
             cout << endl;
         }
         if (option == 5) {
