@@ -12,6 +12,7 @@
 using namespace std;
 using namespace chrono;
 
+//read file based on file name and year
 unordered_map<int, vector<string>> readFile(string fileName)
 {
     unordered_map<int, vector<string>> data;
@@ -57,12 +58,14 @@ unordered_map<int, vector<string>> readFile(string fileName)
     return data;
 }
 
+//add edges to the graphs
 void addEdge(vector <pair<int, int> > adj[], int from, int to, int weight) {
     //index of to and weight
     adj[from].push_back(make_pair(to, weight));
     adj[to].push_back(make_pair(from, weight));
 }
 
+//dijkstra Algorithm
 vector<int> dijkstraAlg (int startIndex, int endIndex, vector<pair<int,int>> adj[])
 {
 
@@ -126,6 +129,7 @@ vector<int> dijkstraAlg (int startIndex, int endIndex, vector<pair<int,int>> adj
     return previous[endIndex];
 }
 
+//Bellman_ford Algorithm
 vector<int> Bellman_Ford(vector<pair<int, int>> graph[], int source, int destination, int adjSize)
 {
     int vectors = adjSize;
@@ -179,45 +183,6 @@ int main()
   
 
   unordered_map<int, vector<string>> data;
-  //vector<pair<int, int>> *adj;
-    //array of vector storing pairs
-
-    //use the first int in pair as the index and the second as the weight
-
-    
-
-//    vector<pair<int, int>> adj[7];
-//    addEdge(adj, 0, 1, 1);
-//    addEdge(adj,0, 3, 3);
-//    addEdge(adj, 0, 5, 2);
-//    addEdge(adj, 1, 4, 7);
-//    addEdge(adj, 1, 2, 2);
-//    addEdge(adj, 1, 3, 1);
-//    addEdge(adj, 2, 3, 6);
-//    addEdge(adj, 2, 4, 10);
-//    addEdge(adj, 5, 3, 4);
-//    addEdge(adj, 3, 6, 4);
-
-    //used to test bellman ford
-    // vector<pair<int, int>> adj[7];
-    //  addEdge2(adj, 0, 1, 3);
-    //  addEdge2(adj,0, 2, 8);
-    //  addEdge2(adj, 1, 4, 6);
-    //  addEdge2(adj, 1, 3, 6);
-    //  addEdge2(adj, 1, 2, 7);
-    //  addEdge2(adj, 3, 1, 5);
-    //  addEdge2(adj, 3, 2, 9);
-    //  addEdge2(adj, 4, 3, 1);
-
-    //a=0, b= 1, c= 2, d=3, e=4
-
-    //change the index
-    //Make start and end random
-//    int startIndex = 10;
-//    int endIndex = 10000;
-//    int startIndex = 0;
-//    int endIndex = 99;
-
 
     //use the algorithm to find all path and use the end index to output the result of this path as questions
     //menu driven program
@@ -230,8 +195,6 @@ int main()
     int questionNumBell = 0;
     int totalMonies = 0;
     
-//    vector<int> indexDij = dijkstraAlg(startIndex, endIndex, adj);
-    //vector<int> bellManFordIndex = Bellman_Ford(adj, 0, 99, 100);
     vector<int> results;
     while (contGame) {
         int option;
@@ -243,6 +206,7 @@ int main()
         cin >> option;
         cout << endl;
 
+        //if the user wants questions
         if (option == 1) {
             cout << "Choose which year you would like questions from (2004-2012): ";
             int year;
@@ -273,13 +237,13 @@ int main()
                 }
                 vector<int> indexDij = dijkstraAlg(startDij, endDij, adj);
 
+                //ask how many questions would you like
                 cout << "How many questions would you like?" << endl;
                 cin >> option;
                 int vectIndex = questionNumDij;
                 string answer;
                 getline(cin, answer);
                 for (int i = 0; i < option; i++) {
-//                    cout << indexDij.at(i+vectIndex) << endl;
                     results.push_back(indexDij.at(i+vectIndex));
                     cout << data[indexDij.at(i+vectIndex)].at(2) << endl;
                     getline(cin, answer);
@@ -300,6 +264,7 @@ int main()
                     questionNumDij++;
                 }
             }
+            //if the user chose bellman ford
             if (option == 2) {
                 vector<int> bellManFordIndex = Bellman_Ford(adj, 0, data.size()-1, data.size());
                 cout << "How many questions would you like?" << endl;
@@ -331,9 +296,11 @@ int main()
             }
             continue;
         }
+        //get the points
         if (option == 2) {
             cout << "Total amount of earnings: $" << totalMonies << endl;
         }
+        //print all the questions asked
         if (option == 3) {
             if (results.empty()) {
                 cout << "No questions yet!" << endl;
@@ -344,6 +311,7 @@ int main()
                 cout << endl;
             }
         }
+        //compare the two algorithm's times
         if (option == 4) {
             //Change these so that both have same start and end index
             //start has to be less than end
