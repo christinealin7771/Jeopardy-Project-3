@@ -8,10 +8,11 @@
 #include <cmath>
 #include <climits>
 #include <algorithm>
-#include <stdlib.h>
+#include <chrono>
 using namespace std;
+using namespace chrono;
 
-unordered_map<int, vector<string>> readFile()
+unordered_map<int, vector<string>> readFile(string fileName)
 {
     unordered_map<int, vector<string>> data;
     string question;
@@ -20,7 +21,7 @@ unordered_map<int, vector<string>> readFile()
     string answer;
     string index;
     string line;
-    ifstream readFile("Jeopardy_cleaned_tsv_updated.tsv");
+    ifstream readFile(fileName);
 
 
     getline(readFile, line);
@@ -34,6 +35,9 @@ unordered_map<int, vector<string>> readFile()
         getline(s_stream, index, '\t');
         int ind = stoi(index);
 
+        getline(s_stream, index, '\t');
+        getline(s_stream, index, '\t');
+        
         getline(s_stream, categories, '\t');
         temp.push_back(categories);
 
@@ -61,7 +65,7 @@ void addEdge(vector <pair<int, int> > adj[], int from, int to, int weight) {
 
 vector<int> dijkstraAlg (int startIndex, int endIndex, vector<pair<int,int>> adj[])
 {
-   
+
     int distance[100000]; //output array of dist[i] will holdest the shortest distance from src to i
     bool visited[100000]; // shorest distance from src to i is finalized
 
@@ -69,7 +73,7 @@ vector<int> dijkstraAlg (int startIndex, int endIndex, vector<pair<int,int>> adj
 
     unordered_set<int> finished;
     int size = 100000;
-  
+
     for(int i = 0; i < size; i++)
     {
         distance[i] = INT_MAX;
@@ -89,7 +93,7 @@ vector<int> dijkstraAlg (int startIndex, int endIndex, vector<pair<int,int>> adj
             int temp = adj[current][i].first;
             int distanceCount = distance[current] + adj[current][i].second;
             if(previous[temp][i] == startIndex && temp != startIndex)
-              previous[temp][0] = current;
+                previous[temp][0] = current;
 
             if(distanceCount < distance[temp])
             {
@@ -102,9 +106,9 @@ vector<int> dijkstraAlg (int startIndex, int endIndex, vector<pair<int,int>> adj
         finished.erase(current);
         if(finished.empty())
         {
-          break;
+            break;
         }
-            
+
         int min = INT_MAX;
         int index = 0;
         for(auto num: finished)
@@ -118,88 +122,81 @@ vector<int> dijkstraAlg (int startIndex, int endIndex, vector<pair<int,int>> adj
         current = index;
     }
     if(startIndex != endIndex)
-      previous[endIndex].erase(previous[endIndex].begin());
+        previous[endIndex].erase(previous[endIndex].begin());
     return previous[endIndex];
 }
 
 vector<int> Bellman_Ford(vector<pair<int, int>> graph[], int source, int destination, int adjSize)
 {
-	int vectors = adjSize;
-	vector<int> distances;
-  vector<int> pathIndex[100000];
+    int vectors = adjSize;
+    vector<int> distances;
+    vector<int> pathIndex[100000];
 
-	for (int i = 0; i < vectors; i++)
-  {
-    distances.push_back(INT_MAX);
-    pathIndex[i].push_back(source);
-  }
-		
-	distances[source] = 0;
+    for (int i = 0; i < vectors; i++)
+    {
+        distances.push_back(INT_MAX);
+        pathIndex[i].push_back(source);
+    }
 
-  //number of vertices - 1 loops
-	for (int i = 0 ; i < vectors - 1; i++)
-	{
-    //they have it where you get the source of an index
-		for (int j = source; j < source + vectors; j++)
-		{
-      for(int k = 0; k < graph[j].size(); k++)
-      {
-        int start = j; // source== index 0
-        int end = graph[j][k].first;
-        int weight = graph[j][k].second;
-        if(pathIndex[end][k] == source && end != source)
-              pathIndex[end][0] = start;
-        if (distances[start] != INT_MAX && distances[start] + weight < distances[end])
+    distances[source] = 0;
+
+    //number of vertices - 1 loops
+    for (int i = 0 ; i < vectors - 1; i++)
+    {
+        //they have it where you get the source of an index
+        for (int j = source; j < source + vectors; j++)
         {
-          pathIndex[end] = pathIndex[start];
-          pathIndex[end].push_back(start);
-          distances[end] = distances[start] + weight;
+            for(int k = 0; k < graph[j].size(); k++)
+            {
+                int start = j; // source== index 0
+                int end = graph[j][k].first;
+                int weight = graph[j][k].second;
+                if(pathIndex[end][k] == source && end != source)
+                    pathIndex[end][0] = start;
+                if (distances[start] != INT_MAX && distances[start] + weight < distances[end])
+                {
+                    pathIndex[end] = pathIndex[start];
+                    pathIndex[end].push_back(start);
+                    distances[end] = distances[start] + weight;
 
+
+                }
+
+            }
 
         }
-          
-      }
-			
-		}
-	}
-  if(source != destination)
-      pathIndex[destination].erase(pathIndex[destination].begin());
+    }
+    if(source != destination)
+        pathIndex[destination].erase(pathIndex[destination].begin());
 
-	return pathIndex[destination];
+    return pathIndex[destination];
 }
-
-
 
 
 
 int main()
 {
-    unordered_map<int, vector<string>> data = readFile();
+  
 
-
+  unordered_map<int, vector<string>> data;
+  //vector<pair<int, int>> *adj;
     //array of vector storing pairs
+
+    //use the first int in pair as the index and the second as the weight
+
     
-    //use the first int in pair as the index and the second as the weight 
 
-//    vector<pair<int, int>> adj[100000];
-//    for (int i = 0; i < 100000; i++) {
-//        addEdge(adj, i, rand() % 100000, (rand() % 20) + 1);
-//        addEdge(adj, i, rand() % 100000, (rand() % 20) + 1);
-//        addEdge(adj, i, rand() % 100000, (rand() % 20) + 1);
-//        edgeNum += 6;
-//    }
-
-     vector<pair<int, int>> adj[7];
-     addEdge(adj, 0, 1, 1);
-     addEdge(adj,0, 3, 3);
-     addEdge(adj, 0, 5, 2);
-     addEdge(adj, 1, 4, 7);
-     addEdge(adj, 1, 2, 2);
-     addEdge(adj, 1, 3, 1);
-     addEdge(adj, 2, 3, 6);
-     addEdge(adj, 2, 4, 10);
-     addEdge(adj, 5, 3, 4);
-     addEdge(adj, 3, 6, 4);
+//    vector<pair<int, int>> adj[7];
+//    addEdge(adj, 0, 1, 1);
+//    addEdge(adj,0, 3, 3);
+//    addEdge(adj, 0, 5, 2);
+//    addEdge(adj, 1, 4, 7);
+//    addEdge(adj, 1, 2, 2);
+//    addEdge(adj, 1, 3, 1);
+//    addEdge(adj, 2, 3, 6);
+//    addEdge(adj, 2, 4, 10);
+//    addEdge(adj, 5, 3, 4);
+//    addEdge(adj, 3, 6, 4);
 
     //used to test bellman ford
     // vector<pair<int, int>> adj[7];
@@ -212,56 +209,82 @@ int main()
     //  addEdge2(adj, 3, 2, 9);
     //  addEdge2(adj, 4, 3, 1);
 
-     //a=0, b= 1, c= 2, d=3, e=4
+    //a=0, b= 1, c= 2, d=3, e=4
 
     //change the index
+    //Make start and end random
 //    int startIndex = 10;
 //    int endIndex = 10000;
-    int startIndex = 0;
-    int endIndex = 6;
+//    int startIndex = 0;
+//    int endIndex = 99;
 
-  
-    vector<int> bellManFordIndex = Bellman_Ford(adj, startIndex, endIndex, 7);
 
     //use the algorithm to find all path and use the end index to output the result of this path as questions
     //menu driven program
     cout << "Welcome to the best Jeopardy Resoruce you can find to help\n"
-        << "prepare you for that finanically changing game of your life.\n" << endl;
+         << "prepare you for that finanically changing game of your life.\n" << endl;
 
     bool contGame = true;
-    //To go through the vector of indexes for Dijkstra's
+    //To go through the vector of indexes
     int questionNumDij = 0;
+    int questionNumBell = 0;
     int totalMonies = 0;
+    
+//    vector<int> indexDij = dijkstraAlg(startIndex, endIndex, adj);
+    //vector<int> bellManFordIndex = Bellman_Ford(adj, 0, 99, 100);
     vector<int> results;
     while (contGame) {
         int option;
         cout << "1. Get a random question from a Round" << endl;
         cout << "2. Total amount of earnings" << endl;
         cout << "3. Outprint all questions and answers" << endl;
-        cout << "4. Quit" << endl;
+        cout << "4. Compare time taken for each algorithm" << endl;
+        cout << "5. Quit" << endl;
         cin >> option;
+        cout << endl;
 
         if (option == 1) {
+            cout << "Choose which year you would like questions from (2004-2012): ";
+            int year;
+            cin >> year;
+
+            string fileName = to_string(year) + "_questions.tsv";
+            data = readFile(fileName);
+            vector<pair<int, int>> adj[data.size()];
+            for (int i = 0; i <data.size(); i++) {
+                addEdge(adj, i, rand() % data.size(), (rand() % 20) + 1);
+                addEdge(adj, i, rand() % data.size(), (rand() % 20) + 1);
+                addEdge(adj, i, rand() % data.size(), (rand() % 20) + 1);
+            }
+
             cout << "Which algorithm would you like to use to generate the questions?" << endl;
             cout << "1. Dijkstra's Algorithm" << endl;
-            cout << "2. I forgot the name of the other one" << endl;
+            cout << "2. Bellman Ford Algorithm" << endl;
             cin >> option;
+            cout << endl;
 
             if (option == 1) {
-                vector<int> index = dijkstraAlg(startIndex, endIndex, adj);
                 //comment out later
-                cout << index.size() << endl;
+//                cout << indexDij.size() << endl;
+                int startDij = rand() % 10;
+                int endDij = rand() % data.size()-1;
+                while (endDij < startDij) {
+                    endDij = rand() % data.size()-1;
+                }
+                vector<int> indexDij = dijkstraAlg(startDij, endDij, adj);
+
                 cout << "How many questions would you like?" << endl;
                 cin >> option;
                 int vectIndex = questionNumDij;
                 string answer;
                 getline(cin, answer);
                 for (int i = 0; i < option; i++) {
-                    results.push_back(i+vectIndex);
-                    cout << data[index.at(i+vectIndex)].at(2) << endl;
+//                    cout << indexDij.at(i+vectIndex) << endl;
+                    results.push_back(indexDij.at(i+vectIndex));
+                    cout << data[indexDij.at(i+vectIndex)].at(2) << endl;
                     getline(cin, answer);
                     transform(answer.begin(), answer.end(), answer.begin(), ::tolower);
-                    string correctAns = data[i+vectIndex].at(3);
+                    string correctAns = data[indexDij.at(i+vectIndex)].at(3);
                     transform(correctAns.begin(), correctAns.end(), correctAns.begin(), ::tolower);
                     if (answer == correctAns) {
                         cout << "Correct" << endl;
@@ -270,10 +293,40 @@ int main()
                     else {
                         cout << "Incorrect" << endl;
                         cout << "The right answer is: " << endl;
-                        cout << data[i+vectIndex].at(3) << endl;
+                        cout << data[indexDij.at(i+vectIndex)].at(3) << endl;
                         totalMonies -= stoi(data[i+vectIndex].at(1));
                     }
+              
                     questionNumDij++;
+                }
+            }
+            if (option == 2) {
+                vector<int> bellManFordIndex = Bellman_Ford(adj, 0, data.size()-1, data.size());
+                cout << "How many questions would you like?" << endl;
+                cin >> option;
+                int vectIndex = questionNumBell;
+                string answer;
+                getline(cin, answer);
+                for (int i = 0; i < option; i++) {
+//                    cout << bellManFordIndex.at(i+vectIndex) << endl;
+                    results.push_back(bellManFordIndex.at(i+vectIndex));
+                    cout << data[bellManFordIndex.at(i+vectIndex)].at(2) << endl;
+                    getline(cin, answer);
+                    transform(answer.begin(), answer.end(), answer.begin(), ::tolower);
+                    string correctAns = data[bellManFordIndex.at(i+vectIndex)].at(3);
+                    transform(correctAns.begin(), correctAns.end(), correctAns.begin(), ::tolower);
+                    if (answer == correctAns) {
+                        cout << "Correct" << endl;
+                        totalMonies += stoi(data[i+vectIndex].at(1));
+                    }
+                    else {
+                        cout << "Incorrect" << endl;
+                        cout << "The right answer is: " << endl;
+                        cout << data[bellManFordIndex.at(i+vectIndex)].at(3) << endl;
+                        totalMonies -= stoi(data[i+vectIndex].at(1));
+                    }
+                    
+                    questionNumBell++;
                 }
             }
             continue;
@@ -282,13 +335,44 @@ int main()
             cout << "Total amount of earnings: $" << totalMonies << endl;
         }
         if (option == 3) {
+            if (results.empty()) {
+                cout << "No questions yet!" << endl;
+            }
             for (int i = 0; i < results.size(); i++) {
-                cout << data[i].at(2) << endl;
-                cout << data[i].at(3) << endl;
+                cout << data[results.at(i)].at(2) << endl;
+                cout << data[results.at(i)].at(3) << endl;
                 cout << endl;
             }
         }
         if (option == 4) {
+            //Change these so that both have same start and end index
+            //start has to be less than end
+            unordered_map<int, vector<string>> data1;
+            data1 = readFile("2012_questions.tsv");
+            vector<pair<int, int>> adj1[data1.size()];
+            for (int i = 0; i <data1.size(); i++) {
+                addEdge(adj1, i, rand() % data1.size(), (rand() % 20) + 1);
+                addEdge(adj1, i, rand() % data1.size(), (rand() % 20) + 1);
+                addEdge(adj1, i, rand() % data1.size(), (rand() % 20) + 1);
+            }
+ 
+
+            int startIndex = 0;
+            auto start = high_resolution_clock::now();
+            vector<int> dijTime = dijkstraAlg(startIndex, data1.size()-1, adj1);
+            auto end = high_resolution_clock::now();
+//            auto duration = duration_cast<milliseconds>(end - start);
+            auto duration = duration_cast<milliseconds>(end - start);
+            cout << "Time taken for Dijkstra's Algorithm: " << duration.count() << endl;
+            start = high_resolution_clock::now();
+            vector<int> bellTime = Bellman_Ford(adj1, startIndex, data1.size()-1, data1.size());
+            end = high_resolution_clock::now();
+//            duration = duration_cast<milliseconds>(end - start);
+            duration = duration_cast<milliseconds>(end - start);
+            cout << "Time taken for Bellman Ford Algorithm: " << duration.count() << endl;
+            cout << endl;
+        }
+        if (option == 5) {
             contGame = false;
         }
     }
